@@ -38,15 +38,8 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<HeapElement<i64, u64
     loop {
         match heap.pop() {
             Some(HeapElement(subject, subject_distance)) => {
-                // Extract the vertex with minimum distance value node from Min Heap. Let the extracted vertex be u.
                 let neighbors = graph.adjacency_list(&subject).unwrap();
-                println!("{:?}", subject);
-                // println!("{:?}", heap.data);
-                // println!("{:?}", answer);
 
-                // For every adjacent vertex v of u, check if v is in Min Heap.
-                // If v is in Min Heap and the distance value is more than the weight of u-v
-                // plus the distance value of u, then update the distance value of v.
                 neighbors.iter().for_each(|(neighbor, neighbor_weight)| {
                     let element = heap
                         .data
@@ -64,8 +57,9 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<HeapElement<i64, u64
                         _ => {}
                     }
 
-                    answer.push(HeapElement(subject, subject_distance));
                 });
+
+                answer.push(HeapElement(subject, subject_distance));
             }
             None => return answer,
         }

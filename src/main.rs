@@ -27,11 +27,9 @@ fn main() {
     graph.insert_edge(2, 1, 10);
     graph.insert_edge(1, 2, 10);
 
-    print!("{:?}", graph);
-
-    print!("\n\n");
+    println!("{:?}", graph);
 
     //graph.print_to_file("result.graph").ok();
 
-    print!("{:?}", djikstra(&graph, 0));
+    println!("{:?}", djikstra(&graph, 0));
 }
