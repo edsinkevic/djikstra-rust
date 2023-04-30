@@ -56,12 +56,12 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<HeapElement<i64, u64
                         }
                         _ => {}
                     }
-
                 });
 
                 answer.push(HeapElement(subject, subject_distance));
             }
-            None => return answer,
+            None => break,
         }
     }
+    answer
 }

@@ -3,8 +3,8 @@ pub mod heap;
 use graph::generate::generate_undirected;
 use graph::generate::GenerationParameters;
 
-use crate::graph::Graph;
 use crate::graph::djikstra::djikstra;
+use crate::graph::Graph;
 fn main() {
     // let parameters = GenerationParameters {
     //     vertex_count: 12,
