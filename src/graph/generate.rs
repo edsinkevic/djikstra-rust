@@ -1,12 +1,11 @@
 use super::Graph;
 use rand::prelude::*;
 
-#[derive(Debug)]
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum GraphGenerationError {
     InvalidNeighborMin,
     InvalidNeighborMax,
-    TooManyEdges
+    TooManyEdges,
 }
 
 pub struct GenerationParameters {
@@ -15,7 +14,9 @@ pub struct GenerationParameters {
     pub neighbor_max: i64,
 }
 
-pub fn generate_undirected(parameters: &GenerationParameters) -> Result<Graph<i64, u64>, GraphGenerationError> {
+pub fn generate_undirected(
+    parameters: &GenerationParameters,
+) -> Result<Graph<i64, u64>, GraphGenerationError> {
     args_validation(parameters)?;
 
     let mut graph = Graph::new();
@@ -24,12 +25,17 @@ pub fn generate_undirected(parameters: &GenerationParameters) -> Result<Graph<i6
 
     let mut rng = rand::thread_rng();
 
-    vertices.for_each(|vertex| fill_vertex(&mut graph, vertex, &mut rng,  &parameters));
+    vertices.for_each(|vertex| fill_vertex(&mut graph, vertex, &mut rng, &parameters));
 
     return Ok(graph);
 }
 
-fn fill_vertex(graph: &mut Graph<i64, u64>, vertex: i64, rand: &mut ThreadRng, parameters: &GenerationParameters) -> () {
+fn fill_vertex(
+    graph: &mut Graph<i64, u64>,
+    vertex: i64,
+    rand: &mut ThreadRng,
+    parameters: &GenerationParameters,
+) -> () {
     if !graph.vertex_exists(&vertex) {
         graph.insert_vertex(vertex);
     }
@@ -49,13 +55,13 @@ fn fill_vertex(graph: &mut Graph<i64, u64>, vertex: i64, rand: &mut ThreadRng, p
                 graph.insert_vertex(random_neighbor);
             }
 
-            let neighbor_has_space_for_neighbors = 
-                (graph.adjacency_list(&random_neighbor).unwrap().len() as i64 + 1) < parameters.neighbor_max;
+            let neighbor_has_space_for_neighbors =
+                (graph.adjacency_list(&random_neighbor).unwrap().len() as i64 + 1)
+                    < parameters.neighbor_max;
 
             if neighbor_has_space_for_neighbors && !graph.edge_exists(&vertex, &random_neighbor) {
                 break;
             }
-
         }
 
         let rand_value = rand.gen_range(0..100);
@@ -77,9 +83,7 @@ fn make_sure_not_same(a: i64, vert: i64, max: i64) -> i64 {
     vertex
 }
 
-
-fn args_validation(args: &GenerationParameters) -> Result<(), GraphGenerationError>{
-
+fn args_validation(args: &GenerationParameters) -> Result<(), GraphGenerationError> {
     if args.neighbor_max >= args.vertex_count {
         return Err(GraphGenerationError::InvalidNeighborMax);
     }
@@ -97,28 +101,43 @@ fn args_validation(args: &GenerationParameters) -> Result<(), GraphGenerationErr
     Ok(())
 }
 
-
 #[cfg(test)]
 mod tests {
-use crate::graph::generate::make_sure_not_same;
+    use crate::graph::generate::make_sure_not_same;
 
-use super::{generate_undirected, GenerationParameters, GraphGenerationError};
+    use super::{generate_undirected, GenerationParameters, GraphGenerationError};
 
     #[test]
     fn args_validation() {
-        let parameters = GenerationParameters{vertex_count: 10, neighbor_min: 0, neighbor_max: 3};
+        let parameters = GenerationParameters {
+            vertex_count: 10,
+            neighbor_min: 0,
+            neighbor_max: 3,
+        };
         let graph = generate_undirected(&parameters);
         assert!(graph.is_ok());
 
-        let parameters = GenerationParameters{vertex_count: 5, neighbor_min: 0, neighbor_max: 6};
+        let parameters = GenerationParameters {
+            vertex_count: 5,
+            neighbor_min: 0,
+            neighbor_max: 6,
+        };
         let err = generate_undirected(&parameters);
         assert_eq!(err.unwrap_err(), GraphGenerationError::InvalidNeighborMax);
 
-        let parameters = GenerationParameters{vertex_count: 5, neighbor_min: 6, neighbor_max: 3};
+        let parameters = GenerationParameters {
+            vertex_count: 5,
+            neighbor_min: 6,
+            neighbor_max: 3,
+        };
         let err = generate_undirected(&parameters);
         assert_eq!(err.unwrap_err(), GraphGenerationError::InvalidNeighborMin);
 
-        let parameters = GenerationParameters{vertex_count: 5, neighbor_min: 3, neighbor_max: 3};
+        let parameters = GenerationParameters {
+            vertex_count: 5,
+            neighbor_min: 3,
+            neighbor_max: 3,
+        };
         let err = generate_undirected(&parameters);
         assert_eq!(err.unwrap_err(), GraphGenerationError::TooManyEdges);
     }
@@ -139,7 +158,11 @@ use super::{generate_undirected, GenerationParameters, GraphGenerationError};
 
     #[test]
     fn generate_undirected_1() {
-        let parameters = GenerationParameters{vertex_count: 10, neighbor_min: 0, neighbor_max: 3};
+        let parameters = GenerationParameters {
+            vertex_count: 10,
+            neighbor_min: 0,
+            neighbor_max: 3,
+        };
 
         let graph = generate_undirected(&parameters).unwrap();
 

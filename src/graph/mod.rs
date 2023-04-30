@@ -1,11 +1,10 @@
-pub mod generate;
 pub mod djikstra;
-pub mod heap;
-
+pub mod generate;
 use std::{
     collections::{HashMap, HashSet, LinkedList},
-    hash, io::Write,
-    fmt::{Display, Debug}
+    fmt::{Debug, Display},
+    hash,
+    io::Write,
 };
 
 use std::fs::File;
@@ -17,8 +16,8 @@ pub struct Graph<K, T> {
 
 impl<K, T> Graph<K, T>
 where
-    K: hash::Hash + Eq + Copy + Display + Debug ,
-    T:  Debug + Display
+    K: hash::Hash + Eq + Copy + Display + Debug,
+    T: Debug + Display,
 {
     pub fn new() -> Graph<K, T> {
         Graph {
@@ -61,18 +60,18 @@ where
     pub fn edge_exists(&self, from: &K, to: &K) -> bool {
         self.vertex_exists(from)
             && self
-            .adjacency_list(from)
-            .unwrap()
-            .iter()
-            .any(|(neighbor, _)| *neighbor == *to)
+                .adjacency_list(from)
+                .unwrap()
+                .iter()
+                .any(|(neighbor, _)| *neighbor == *to)
     }
 
     pub fn out_neighbors(&self, vertex: &K) -> Option<HashSet<&K>> {
         Some(
             self.adjacency_list(&vertex)?
-            .iter()
-            .map(|(out_neighbor, _)| out_neighbor)
-            .collect(),
+                .iter()
+                .map(|(out_neighbor, _)| out_neighbor)
+                .collect(),
         )
     }
 
@@ -83,15 +82,15 @@ where
 
         Some(
             self.content
-            .keys()
-            .filter_map(|key| {
-                if key != vertex && self.edge_exists(key, vertex) {
-                    Some(key)
-                } else {
-                    None
-                }
-            })
-            .collect(),
+                .keys()
+                .filter_map(|key| {
+                    if key != vertex && self.edge_exists(key, vertex) {
+                        Some(key)
+                    } else {
+                        None
+                    }
+                })
+                .collect(),
         )
     }
 
