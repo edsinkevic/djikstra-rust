@@ -19,6 +19,7 @@ fn main() {
     graph.insert_vertex(0);
     graph.insert_vertex(1);
     graph.insert_vertex(2);
+    graph.insert_vertex(3);
 
     graph.insert_edge(0, 1, 50);
     graph.insert_edge(1, 0, 50);
@@ -26,6 +27,8 @@ fn main() {
     graph.insert_edge(2, 0, 30);
     graph.insert_edge(2, 1, 10);
     graph.insert_edge(1, 2, 10);
+    graph.insert_edge(1, 3, 60);
+    graph.insert_edge(3, 1, 60);
 
     println!("{:?}", graph);
 
