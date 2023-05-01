@@ -53,9 +53,7 @@ impl<T: Ord + Copy> Heap<T> {
     pub fn heapify(&mut self, idx: usize) {
         let mut current = idx;
         loop {
-            let min = self.get_min_idx(self.left(current), self.right(current), current);
-
-            match min {
+            match self.get_min_idx(self.left(current), self.right(current), current) {
                 Some(min) if min != current => {
                     self.data.swap(current, min);
 
