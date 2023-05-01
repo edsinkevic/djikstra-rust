@@ -15,7 +15,7 @@ fn main() {
     // let graph = generate_undirected(&parameters).unwrap();
 
     let mut graph = Graph::new();
-
+    
     graph.insert_vertex(0);
     graph.insert_vertex(1);
     graph.insert_vertex(2);
@@ -27,12 +27,29 @@ fn main() {
     graph.insert_edge(2, 0, 30);
     graph.insert_edge(2, 1, 10);
     graph.insert_edge(1, 2, 10);
-    graph.insert_edge(1, 3, 60);
     graph.insert_edge(3, 1, 60);
+    graph.insert_edge(1, 3, 60);
+    
 
-    println!("{:?}", graph);
+    let mut min = None;
+    let mut min_vertex = None;
 
-    //graph.print_to_file("result.graph").ok();
+    graph.get_vertices().iter().for_each(|vertex| {
+        let result = djikstra(&graph, **vertex);
+        let mut sum = 0;
+        result.iter().for_each(|node| sum += node.distance);
+        let avg = sum as f32 / (result.len() as f32);
 
-    println!("{:?}", djikstra(&graph, 0));
+        if min.is_none() || min > Some(avg) {
+            min = Some(avg);
+            min_vertex = Some(**vertex);
+        }
+
+        println!("{:?}", result);
+        println!("{:?} {:?}", avg, **vertex);
+        println!("{:?} {:?}", min, min_vertex);
+    });
+
+    graph.print_to_file("files/main.graph").expect("Couldn't write file!");
+
 }

@@ -9,8 +9,52 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<Node<i64, u64>> {
     let mut heap = Heap::new();
     let mut answer = Vec::new();
 
+    init(&mut heap, graph, start);
+
+    loop {
+        let popped = heap.pop();
+
+        if popped.is_none() {
+            break;
+        }
+
+        let subject = popped.unwrap();
+
+        let neighbors = graph.adjacency_list(&subject.vertex).unwrap();
+
+        neighbors.iter().for_each(|(neighbor, neighbor_weight)| {
+            let element = heap
+                .data
+                .iter()
+                .enumerate()
+                .find(|(_, adjacent)| *neighbor == adjacent.vertex);
+
+            match element {
+                Some((index, neighbor_node))
+                    if neighbor_node.distance > neighbor_weight + subject.distance =>
+                {
+                    heap.decrease_key(
+                        index,
+                        Node {
+                            vertex: neighbor_node.vertex,
+                            distance: neighbor_weight + subject.distance,
+                            prev: Some(subject.vertex),
+                        },
+                    );
+                }
+                _ => {}
+            }
+        });
+
+        // println!("\n\n\n");
+        answer.push(subject);
+    }
+    answer
+}
+
+fn init(heap: &mut Heap<Node<i64, u64>>, graph: &Graph<i64, u64>, start: i64) {
     if !graph.vertex_exists(&start) {
-        return Vec::new();
+        return;
     }
 
     heap.insert(Node {
@@ -28,52 +72,6 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<Node<i64, u64>> {
             })
         }
     });
-
-    loop {
-        println!("Before pop: {:?}", heap.data);
-        match heap.pop() {
-            Some(subject) => {
-                let neighbors = graph.adjacency_list(&subject.vertex).unwrap();
-
-                neighbors.iter().for_each(|(neighbor, neighbor_weight)| {
-                    let element = heap
-                        .data
-                        .iter()
-                        .enumerate()
-                        .find(|(_, adjacent)| *neighbor == adjacent.vertex);
-
-                    match element {
-                        Some((index, neighbor_node))
-                            if neighbor_node.distance > neighbor_weight + subject.distance =>
-                        {
-                            println!(
-                                "Setting {} (heap.data index {}) to {}",
-                                neighbor_node.vertex,
-                                index,
-                                neighbor_weight + subject.distance
-                            );
-                            println!("Before heapify: {:?}", heap.data);
-                            heap.decrease_key(
-                                index,
-                                Node {
-                                    vertex: neighbor_node.vertex,
-                                    distance: neighbor_weight + subject.distance,
-                                    prev: Some(subject.vertex),
-                                },
-                            );
-                            println!("After heapify: {:?}", heap.data);
-                        }
-                        _ => {}
-                    }
-                });
-
-                println!("\n\n\n");
-                answer.push(subject);
-            }
-            None => break,
-        }
-    }
-    answer
 }
 
 #[cfg(test)]

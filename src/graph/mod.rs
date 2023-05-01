@@ -16,7 +16,7 @@ pub struct Graph<K, T> {
 
 impl<K, T> Graph<K, T>
 where
-    K: hash::Hash + Eq + Copy + Display + Debug,
+    K: hash::Hash + Eq + Copy + Display + Debug + Ord,
     T: Debug + Display,
 {
     pub fn new() -> Graph<K, T> {
@@ -39,6 +39,10 @@ where
 
     pub fn vertex_count(&self) -> usize {
         self.content.len()
+    }
+
+    pub fn get_vertices(&self) -> Vec<&K> {
+        Vec::from_iter(self.content.keys())
     }
 
     pub fn adjacency_list(&self, vertex: &K) -> Option<&LinkedList<(K, T)>> {
@@ -96,7 +100,12 @@ where
 
     pub fn print_to_file(&self, file_name: &str) -> std::io::Result<()> {
         let mut file = File::create(file_name)?;
-        self.content.iter().for_each(|(vertex, edge_list)| {
+        let mut sorted = Vec::from_iter(self.content.iter());
+
+        sorted.sort_by_key(|(x, _)| **x);
+
+
+        sorted.iter().for_each(|(vertex, edge_list)| {
             write!(&mut file, "Vertex {}: {:?}\n", vertex, edge_list).ok();
         });
         Ok(())
