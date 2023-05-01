@@ -52,38 +52,26 @@ impl<T: Ord + Copy> Heap<T> {
 
     pub fn heapify(&mut self, idx: usize) {
         let mut current = idx;
-
         loop {
-            let left = self.left(current);
-            let right = self.right(current);
-            let size = self.data.len() - 1;
+            let min = self.get_min_idx(self.left(current), self.right(current), current);
 
-            if left > size || right > size {
-                break;
-            }
+            match min {
+                Some(min) if min != current => {
+                    self.data.swap(current, min);
 
-            let max = self.get_max_idx(left, right, current);
-
-            if max != current {
-                self.data.swap(current, max);
-
-                current = max;
-            } else {
-                break;
+                    current = min;
+                }
+                _ => break,
             }
         }
     }
 
-    fn get_max_idx(&self, left_idx: usize, right_idx: usize, idx: usize) -> usize {
-        let max = self.data[left_idx]
-            .max(self.data[right_idx])
-            .max(self.data[idx]);
-
-        match max {
-            i if i == self.data[idx] => idx,
-            i if i == self.data[right_idx] => right_idx,
-            _ => left_idx,
-        }
+    fn get_min_idx(&self, left_idx: usize, right_idx: usize, idx: usize) -> Option<usize> {
+        [left_idx, right_idx, idx]
+            .iter()
+            .filter_map(|_idx| self.data.get(*_idx).map(|x| (_idx, x)))
+            .min_by_key(|(_, val)| *val)
+            .map(|(idx, _)| *idx)
     }
 }
 
