@@ -28,13 +28,12 @@ impl<T: Ord + Copy> Heap<T> {
         }
 
         self.data[idx] = element;
-        let mut parent = self.parent(idx);
         let mut current = idx;
 
-        while current > 1 && self.data[parent] < self.data[current] {
-            self.data.swap(idx, parent);
-            current = parent;
-            parent = self.parent(current);
+        while current > 0 && self.data[self.parent(current)] > self.data[current] {
+            let parent = self.parent(current);
+            self.data.swap(current, parent);
+            current = self.parent(current);
         }
     }
 
@@ -55,7 +54,11 @@ impl<T: Ord + Copy> Heap<T> {
     }
 
     fn parent(&self, idx: usize) -> usize {
-        idx / 2
+        if idx % 2 == 0 {
+            (idx - 1) / 2
+        } else {
+            idx / 2
+        }
     }
 
     fn left(&self, idx: usize) -> usize {
@@ -88,4 +91,25 @@ impl<T: Ord + Copy> Heap<T> {
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::Heap;
+
+    #[test]
+    fn insert() {
+        let mut heap = Heap::new();
+        heap.insert(3);
+        heap.insert(2);
+        heap.insert(1);
+
+        assert_eq!(heap.pop().unwrap(), 1);
+        assert_eq!(heap.pop().unwrap(), 2);
+        assert_eq!(heap.pop().unwrap(), 3);
+    }
+
+    #[test]
+    fn parent() {
+        let heap = Heap::<i64>::new();
+        assert_eq!(heap.right(1), 4);
+        assert_eq!(heap.parent(4), 1);
+    }
+}

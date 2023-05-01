@@ -28,6 +28,7 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<Node<i64, u64>> {
     });
 
     loop {
+        println!("Before pop: {:?}", heap.data);
         match heap.pop() {
             Some(subject) => {
                 let neighbors = graph.adjacency_list(&subject.vertex).unwrap();
@@ -35,7 +36,7 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<Node<i64, u64>> {
                 neighbors.iter().for_each(|(neighbor, neighbor_weight)| {
                     let element = heap
                         .data
-                        .iter_mut()
+                        .iter()
                         .enumerate()
                         .find(|(_, adjacent)| *neighbor == adjacent.vertex);
 
@@ -43,7 +44,6 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<Node<i64, u64>> {
                         Some((index, neighbor_node))
                             if neighbor_node.distance > neighbor_weight + subject.distance =>
                         {
-                            neighbor_node.distance = neighbor_weight + subject.distance;
                             println!(
                                 "Setting {} (heap.data index {}) to {}",
                                 neighbor_node.vertex,
@@ -51,13 +51,14 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<Node<i64, u64>> {
                                 neighbor_weight + subject.distance
                             );
                             println!("Before heapify: {:?}", heap.data);
-                            heap.heapify(index);
+                            heap.decrease_key(index, Node { vertex: neighbor_node.vertex, distance: neighbor_weight + subject.distance});
                             println!("After heapify: {:?}", heap.data);
                         }
                         _ => {}
                     }
                 });
 
+                println!("\n\n\n");
                 answer.push(subject);
             }
             None => break,
@@ -86,6 +87,7 @@ mod tests {
         graph.insert_vertex(0);
         graph.insert_vertex(1);
         graph.insert_vertex(2);
+        graph.insert_vertex(3);
 
         graph.insert_edge(0, 1, 50);
         graph.insert_edge(1, 0, 50);
@@ -93,30 +95,32 @@ mod tests {
         graph.insert_edge(2, 0, 30);
         graph.insert_edge(2, 1, 10);
         graph.insert_edge(1, 2, 10);
+        graph.insert_edge(3, 1, 60);
+        graph.insert_edge(1, 3, 60);
 
         let results = djikstra(&graph, 0);
         println!("{:?}", results);
-        assert_eq!(results.len(), 3);
+        assert_eq!(results.len(), 4);
         assert_eq!(
-            results[0],
-            Node {
-                vertex: 0,
-                distance: 0
-            }
-        );
-        assert_eq!(
-            results[1],
-            Node {
-                vertex: 2,
-                distance: 30
-            }
-        );
-        assert_eq!(
-            results[2],
-            Node {
-                vertex: 1,
-                distance: 40
-            }
+            results,
+            vec![
+                Node {
+                    vertex: 0,
+                    distance: 0
+                },
+                Node {
+                    vertex: 2,
+                    distance: 30
+                },
+                Node {
+                    vertex: 1,
+                    distance: 40
+                },
+                Node {
+                    vertex: 3,
+                    distance: 100
+                }
+            ]
         );
     }
 }
