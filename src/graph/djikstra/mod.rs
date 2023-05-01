@@ -16,6 +16,7 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<Node<i64, u64>> {
     heap.insert(Node {
         vertex: start,
         distance: 0,
+        prev: None,
     });
 
     graph.content.iter().for_each(|(vertex, _)| {
@@ -23,6 +24,7 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<Node<i64, u64>> {
             heap.insert(Node {
                 vertex: *vertex,
                 distance: u64::MAX - 1000,
+                prev: None,
             })
         }
     });
@@ -51,7 +53,14 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<Node<i64, u64>> {
                                 neighbor_weight + subject.distance
                             );
                             println!("Before heapify: {:?}", heap.data);
-                            heap.decrease_key(index, Node { vertex: neighbor_node.vertex, distance: neighbor_weight + subject.distance});
+                            heap.decrease_key(
+                                index,
+                                Node {
+                                    vertex: neighbor_node.vertex,
+                                    distance: neighbor_weight + subject.distance,
+                                    prev: Some(subject.vertex),
+                                },
+                            );
                             println!("After heapify: {:?}", heap.data);
                         }
                         _ => {}
@@ -106,19 +115,23 @@ mod tests {
             vec![
                 Node {
                     vertex: 0,
-                    distance: 0
+                    distance: 0,
+                    prev: None
                 },
                 Node {
                     vertex: 2,
-                    distance: 30
+                    distance: 30,
+                    prev: Some(0)
                 },
                 Node {
                     vertex: 1,
-                    distance: 40
+                    distance: 40,
+                    prev: Some(2)
                 },
                 Node {
                     vertex: 3,
-                    distance: 100
+                    distance: 100,
+                    prev: Some(1)
                 }
             ]
         );

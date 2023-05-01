@@ -2,6 +2,7 @@
 pub struct Node<K, T> {
     pub vertex: K,
     pub distance: T,
+    pub prev: Option<K>
 }
 
 impl<K, T: PartialEq> PartialEq for Node<K, T> {
