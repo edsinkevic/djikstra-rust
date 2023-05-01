@@ -9,16 +9,32 @@ impl<T: Ord + Copy> Heap<T> {
 
     pub fn insert(&mut self, element: T) {
         self.data.push(element);
-        let mut last_element_idx = self.data.len() - 1;
+        let mut current = self.data.len() - 1;
 
-        while last_element_idx != 0 {
-            let parent_idx = self.parent(last_element_idx);
+        while current != 0 {
+            let parent_idx = self.parent(current);
 
-            if self.data[last_element_idx] < self.data[parent_idx] {
-                self.data.swap(last_element_idx, parent_idx)
+            if self.data[current] < self.data[parent_idx] {
+                self.data.swap(current, parent_idx)
             }
 
-            last_element_idx = parent_idx;
+            current = parent_idx;
+        }
+    }
+
+    pub fn decrease_key(&mut self, idx: usize, element: T) {
+        if element > self.data[idx] {
+            panic!("New key is bigger than current key");
+        }
+
+        self.data[idx] = element;
+        let mut parent = self.parent(idx);
+        let mut current = idx;
+
+        while current > 1 && self.data[parent] < self.data[current] {
+            self.data.swap(idx, parent);
+            current = parent;
+            parent = self.parent(current);
         }
     }
 
@@ -51,25 +67,23 @@ impl<T: Ord + Copy> Heap<T> {
     }
 
     pub fn heapify(&mut self, idx: usize) {
-        let mut current = idx;
-        loop {
-            match self.get_min_idx(self.left(current), self.right(current), current) {
-                Some(min) if min != current => {
-                    self.data.swap(current, min);
+        let left_idx = self.left(idx);
+        let right_idx = self.right(idx);
+        let size = self.data.len();
+        let mut min_idx = idx;
 
-                    current = min;
-                }
-                _ => break,
-            }
+        if left_idx < size && self.data[left_idx] < self.data[min_idx] {
+            min_idx = left_idx;
+        };
+
+        if right_idx < size && self.data[right_idx] < self.data[min_idx] {
+            min_idx = right_idx;
         }
-    }
 
-    fn get_min_idx(&self, left_idx: usize, right_idx: usize, idx: usize) -> Option<usize> {
-        [left_idx, right_idx, idx]
-            .iter()
-            .filter_map(|_idx| self.data.get(*_idx).map(|x| (_idx, x)))
-            .min_by_key(|(_, val)| *val)
-            .map(|(idx, _)| *idx)
+        if min_idx != idx {
+            self.data.swap(idx, min_idx);
+            self.heapify(min_idx);
+        }
     }
 }
 
