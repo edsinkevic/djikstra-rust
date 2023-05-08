@@ -1,13 +1,9 @@
 pub mod djikstra;
 pub mod generate;
-use std::{
-    collections::{HashMap, HashSet, LinkedList},
-    fmt::{Debug, Display},
-    hash,
-    io::Write,
-};
+pub mod read;
+pub mod print;
 
-use std::fs::File;
+use std::{collections::{HashMap, HashSet, LinkedList}, fmt::{Debug, Display}, hash};
 
 #[derive(Debug)]
 pub struct Graph<K, T> {
@@ -98,18 +94,7 @@ where
         )
     }
 
-    pub fn print_to_file(&self, file_name: &str) -> std::io::Result<()> {
-        let mut file = File::create(file_name)?;
-        let mut sorted = Vec::from_iter(self.content.iter());
 
-        sorted.sort_by_key(|(x, _)| **x);
-
-
-        sorted.iter().for_each(|(vertex, edge_list)| {
-            write!(&mut file, "Vertex {}: {:?}\n", vertex, edge_list).ok();
-        });
-        Ok(())
-    }
 }
 
 #[cfg(test)]
@@ -217,5 +202,10 @@ mod tests {
         graph.insert_edge(vertex1, vertex, 0);
         graph.insert_edge(vertex2, vertex, 1);
         assert_eq!(graph.in_neighbors(&vertex).unwrap().len(), 2);
+    }
+
+    #[test]
+    fn read_from_file() {
+        
     }
 }

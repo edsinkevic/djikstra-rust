@@ -22,7 +22,7 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<Node<i64, u64>> {
 
         let neighbors = graph.adjacency_list(&subject.vertex).unwrap();
 
-        neighbors.iter().for_each(|(neighbor, neighbor_weight)| {
+        for (neighbor, neighbor_weight) in neighbors {
             let element = heap
                 .data
                 .iter()
@@ -44,7 +44,7 @@ pub fn djikstra(graph: &Graph<i64, u64>, start: i64) -> Vec<Node<i64, u64>> {
                 }
                 _ => {}
             }
-        });
+        };
 
         // println!("\n\n\n");
         answer.push(subject);
